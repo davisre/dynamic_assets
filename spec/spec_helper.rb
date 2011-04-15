@@ -6,10 +6,7 @@ $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 $LOAD_PATH.unshift(File.dirname(__FILE__))
 
 require 'rspec/rails'
-
-require "capybara/rails"
-Capybara.default_driver   = :rack_test
-Capybara.default_selector = :css
+require 'capybara/rspec'
 
 require 'dynamic_assets'
 

@@ -87,7 +87,7 @@ dynamically is useful enough that multiple people have thought of implementing i
       - application
       - admin
 
-   The asset file sets some config values and then lists your assets. Don't be shy
+   The assets.yml file sets some config values and then lists your assets. Don't be shy
    about listing your assets; it's a good way to get noticed. This sample config
    file says that in production, foo.js, bar.js, baz.js, and widget.js (which is
    in app/views/javascripts/third-party) should be combined into one file,
@@ -183,7 +183,7 @@ need to debug them (like with Firebug). In production, caching minimizes
 the overhead, but you typically won't cache your assets in development,
 unless you're some sort of nut.
 
-=== Set assets to be combined, even in development
+=== Set assets to be combined, even in development and especially in test
 
 By default Rails reloads all classes with each new request in development
 mode. If you're not combining all of your assets, a single page load
@@ -207,7 +207,7 @@ Call me silly, but I prefer to find out about that kind of error before I
 deploy my app, and with DynamicAssets I can easily set my test environment to
 combine and minify, so any full-stack testing will expose the problem.
 
-=== Or, to eliminate the biggest bottleneck, turn off class caching in dev
+=== Or, to eliminate the biggest bottleneck, turn off class caching in development
 
 If you don't mind to restart your server every time you change a
 bit of Ruby code, you could edit your config/environments/development.rb
@@ -221,5 +221,5 @@ on every request.
 
 == Copyright
 
-Copyright (c) 2011 Robert Davis. See LICENSE.txt for further details.
+Copyright (c) 2011 Robert Davis. See MIT-LICENSE for further details.
 

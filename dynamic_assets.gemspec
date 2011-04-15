@@ -10,7 +10,7 @@ Gem::Specification.new do |s|
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Robert Davis"]
   s.date = %q{2011-04-15}
-  s.description = %q{Process css and js assets in a Rails app on the fly with erb, sass, and scss}
+  s.description = %q{Make your Rails 3 app process css and js assets on the fly with erb, sass, or scss}
   s.email = %q{davis@coaster.com}
   s.extra_rdoc_files = [
     "README.rdoc"
@@ -33,7 +33,7 @@ Gem::Specification.new do |s|
   s.licenses = ["MIT"]
   s.require_paths = ["lib"]
   s.rubygems_version = %q{1.3.7}
-  s.summary = %q{Process css and js assets in a Rails app on the fly with erb, sass, and scss}
+  s.summary = %q{Make your Rails 3 app process css and js assets on the fly with erb, sass, or scss}
   s.test_files = [
     "spec/dummy_rails_app/app/controllers/application_controller.rb",
     "spec/dummy_rails_app/app/helpers/application_helper.rb",

@@ -37,8 +37,8 @@ dynamically is useful enough that multiple people have thought of implementing i
 
     gem "dynamic_assets"
 
-2. Put your CSS files in <tt>app/views/stylesheets</tt> and your JS files in
-   <tt>app/views/javascripts</tt>. Each filename's extension triggers an
+2. Put your CSS files in <tt>app/assets/stylesheets</tt> and your JS files in
+   <tt>app/assets/javascripts</tt>. Each filename's extension triggers an
    optional pre-processor:
 
     .css          = raw
@@ -90,7 +90,7 @@ dynamically is useful enough that multiple people have thought of implementing i
    The assets.yml file sets some config values and then lists your assets. Don't be shy
    about listing your assets; it's a good way to get noticed. This sample config
    file says that in production, foo.js, bar.js, baz.js, and widget.js (which is
-   in app/views/javascripts/third-party) should be combined into one file,
+   in app/assets/javascripts/third-party) should be combined into one file,
    minified, and served by your app as /assets/javascripts/base.js in such a way
    that it'd be cached. In development, those files would be combined but not minified
    or cached.
@@ -125,7 +125,7 @@ into an asset via ERB, like this:
         end
     end
 
-Now in app/views/stylesheets/application.css.erb you could do this:
+Now in app/assets/stylesheets/application.css.erb you could do this:
 
     body {
         background-color: <%= @background_color %>;
@@ -149,7 +149,7 @@ public/stylesheets/fancy_background.png.
 
 With DynamicAssets, you'll put them here instead:
 
-    app/views/stylesheets/thing.css
+    app/assets/stylesheets/thing.css
     public/stylesheets/thing/fancy_background.png
 
 and the processor will make sure the embedded URL is turned into a fully

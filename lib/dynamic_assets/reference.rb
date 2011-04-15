@@ -43,7 +43,7 @@ module DynamicAssets
     end
 
     def member_root
-      "#{Rails.root}/app/views/#{type.to_s}"
+      "#{Rails.root}/app/assets/#{type.to_s}"
     end
 
     # Optionally pass context from which ERB can pull instance variables.

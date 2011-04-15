@@ -5,7 +5,7 @@
 
 Gem::Specification.new do |s|
   s.name = %q{dynamic_assets}
-  s.version = "0.2.0"
+  s.version = "0.3.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Robert Davis"]
@@ -23,6 +23,7 @@ Gem::Specification.new do |s|
     "lib/dynamic_assets/config.rb",
     "lib/dynamic_assets/controller.rb",
     "lib/dynamic_assets/core_extensions.rb",
+    "lib/dynamic_assets/cssmin.rb",
     "lib/dynamic_assets/engine.rb",
     "lib/dynamic_assets/manager.rb",
     "lib/dynamic_assets/reference.rb",

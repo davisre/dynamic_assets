@@ -3,14 +3,12 @@ module DynamicAssetsHelpers
 
     def stylesheet_asset_tag(group_key, http_attributes = {})
       DynamicAssets::Manager.asset_references_for_group_key(:stylesheets, group_key).map do |asset_ref|
-        path = stylesheet_asset_path asset_ref.name
-        path << "?#{asset_ref.mtime.to_i.to_s}" if asset_ref.mtime.present?
 
         tag :link, {
           :type   => "text/css",
           :rel    => "stylesheet",
           :media  => "screen",
-          :href   => asset_url_for_path(path)
+          :href   => asset_url(asset_ref)
         }.merge!(http_attributes)
 
       end.join.html_safe
@@ -18,12 +16,10 @@ module DynamicAssetsHelpers
 
     def javascript_asset_tag(group_key, http_attributes = {})
       DynamicAssets::Manager.asset_references_for_group_key(:javascripts, group_key).map do |asset_ref|
-        path = javascript_asset_path asset_ref.name
-        path << "?#{asset_ref.mtime.to_i.to_s}" if asset_ref.mtime.present?
 
         content_tag :script, "", {
           :type => "text/javascript",
-          :src  => asset_url_for_path(path)
+          :src  => asset_url(asset_ref)
         }.merge!(http_attributes)
 
       end.join.html_safe
@@ -32,16 +28,24 @@ module DynamicAssetsHelpers
 
   protected
 
-    def asset_url_for_path(path)
-      raise "expected a path, not a full URL: #{path}" unless path.relative_url?
+    def asset_path(asset_ref)
+      name = asset_ref.name
+
+      case asset_ref
+      when DynamicAssets::StylesheetReference then stylesheet_asset_path name
+      when DynamicAssets::JavascriptReference then javascript_asset_path name
+      else raise "Unknown asset type: #{asset_ref}"
+      end
+    end
+
+    def asset_url(asset_ref)
+      path = asset_path asset_ref
       path = "/" + path unless path[0,1] == "/"
+      path << "?#{asset_ref.mtime.to_i.to_s}" if asset_ref.mtime.present?
+
       host = compute_asset_host path
 
-      if host
-        "#{host}#{path}"
-      else
-        path
-      end
+      host ? "#{host}#{path}" : path
     end
 
     # Extracted from Rails' AssetTagHelper, where it's private

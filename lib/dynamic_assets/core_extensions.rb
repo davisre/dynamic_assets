@@ -27,3 +27,15 @@ class Object
   end
 
 end
+
+class File
+
+  def self.find_existing(paths)
+    paths.each do |path|
+      return path if File.exists? path
+    end
+
+    nil
+  end
+
+end

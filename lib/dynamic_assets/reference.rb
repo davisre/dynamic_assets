@@ -43,7 +43,10 @@ module DynamicAssets
     end
 
     def member_root
-      "#{Rails.root}/app/assets/#{type.to_s}"
+      return @member_root if @member_root
+
+      possible_roots = ["#{Rails.root}/app/assets/#{type.to_s}", "#{Rails.root}/app/views/#{type.to_s}"]
+      @member_root = File.find_existing(possible_roots) || possible_roots.first
     end
 
     # Optionally pass context from which ERB can pull instance variables.

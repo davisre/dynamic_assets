@@ -82,6 +82,7 @@ dynamically is useful enough that multiple people have thought of implementing i
     - app:
       - reset
       - application
+      - sidebar
     - admin
       - reset
       - application
@@ -104,9 +105,20 @@ dynamically is useful enough that multiple people have thought of implementing i
     <%= javascript_asset_tag :base %>
 
    wherever you want your script tags to appear. The symbol argument to each
-   helper is the name of the group you defined in assets.yml. The helper will
-   produce one tag if the assets are combined, or multiple tags if they're not,
-   like the cowboy in <i>Mulholland Dr.</i>
+   helper is the name of the group you defined in assets.yml. Each helper will
+   generate one tag if the assets are combined or multiple tags if they're
+   not, much like the cowboy in <i>Mulholland Dr.</i>. For example, if your
+   assets.yml says to combine asset groups, stylesheet_asset_tag(:base) will
+   insert this one tag into your page:
+
+    <link href="/assets/stylesheets/base_v2.css?1302901941" media="screen" rel="stylesheet" type="text/css" />
+
+   but if your assets.yml says not to combine them, stylesheet_asset_tag(:base)
+   will insert one tag per CSS file:
+
+    <link href="/assets/stylesheets/reset.css?1302901941" media="screen" rel="stylesheet" type="text/css" />
+    <link href="/assets/stylesheets/application.css?1302901941" media="screen" rel="stylesheet" type="text/css" />
+    <link href="/assets/stylesheets/sidebar.css?1302901900" media="screen" rel="stylesheet" type="text/css" />
 
 
 == Variables for ERB
@@ -132,18 +144,18 @@ Now in app/assets/stylesheets/application.css.erb you could do this:
     }
 
 
-== Static Images Embedded in CSS
+== Static Image URLs Embedded in CSS
 
-Sometimes you'll install a JavaScript plugin that was created by someone
-else, and it will come with a stylesheet and images. The stylesheet may
-reference an image like this:
+Suppose you install a JavaScript plugin that comes with a stylesheet and
+some images. The stylesheet, thing.css, may reference one of its images
+like this:
 
     div.thing {
         background: url(fancy_background.png);
     }
 
 Browsers will find the image by looking in the same URL path as the
-stylesheet, so in a typical Rails environment, you might add these two
+stylesheet, so in a typical Rails environment, you might add these
 files to your app as public/stylesheets/thing.css and
 public/stylesheets/fancy_background.png.
 
@@ -156,6 +168,15 @@ and the processor will make sure the embedded URL is turned into a fully
 qualified one that will allow the browser to find
 /stylesheets/thing/fancy_background.png.
 
+Or, if you prefer to keep your third-party images cleanly separated from
+your own, you could put them in a subdirectory:
+
+    app/assets/stylesheets/third-party/thing.css
+    public/stylesheets/third-party/thing/fancy_background.png
+
+DynamicAssets expects the images that belong to an asset to be in a
+parallel directory structure under public/stylesheets.
+
 == CSS Media Types
 
 If you have different CSS files for printing than for the screen, create
@@ -164,37 +185,44 @@ separate groups in your assets.yml. Then include both groups in your layout:
     <%= stylesheet_asset_tag :app %>
     <%= stylesheet_asset_tag :app_printing, :media => "print" %>
 
+If no :media attribute is supplied, stylesheet_asset_tag will use "screen".
+
+
 == Performance
 
 In production, assets can typically be cached aggressively. Like Rails,
 dynamic_assets adds a URL parameter to the asset path that will change
 if any of the underlying assets is modified, forcing clients to reload
-the asset. In production, I find dynamic assets to be quite speedy.
+the asset. With action caching and/or an external cache like Varnish or
+a CDN, dynamic assets are quite speedy because you generate them rarely.
 
-But dynamic assets can sometimes be annoying during development. The
-sweet spot for my dev environment is to combine assets but not to
-minify or cache them (see assets.yml above). Here's why:
+But during development they can be annoying <em>if</em> you set your
+environment to maximum slowness. The sweet spot for my dev configuration
+is to combine assets but not to minify or cache them (as shown in the
+assets.yml above). Here's why:
 
-=== Usually set assets not to be minified in development
+=== Set assets not to be minified in development, usually
 
-I usually leave minification off in development, because it does add some
-overhead to each asset request, and it makes them difficult to read if you
-need to debug them (like with Firebug). In production, caching minimizes
-the overhead, but you typically won't cache your assets in development,
-unless you're some sort of nut.
+I usually leave minification off in development, because it can add some
+overhead to each asset request, and it makes the assets difficult to read
+if you need to debug them (like with Firebug). In production, caching
+virtually eliminates the overhead on all requests after the first one, but
+you typically won't cache your assets in development, unless you're some
+sort of nut.
 
 === Set assets to be combined, even in development and especially in test
 
-By default Rails reloads all classes with each new request in development
-mode. If you're not combining all of your assets, a single page load
-will result in an additional request to your app for each asset, which
-may result in a dozen requests to your dev server for one page, and each
-one will reload all of your classes. Combining assets in dev reduces the
-number of requests, shrinking your page load time. And unlike minification,
-using combined assets in dev is usually not a problem because the concatenated
-files are still quite readable. The one exception is that it makes it more
-difficult to find out which asset file includes the problem you're hunting
-down.
+By default, in development, Rails reloads all classes with each new request.
+(This is controlled by the cache_classes config parameter.) So if you're not
+combining all of your assets, a single page load will result in an additional
+request to your app <em>for each asset</em>, which may result in a dozen
+requests to your dev server for each page, and each of those dozen requests
+will reload all of your classes. Combining assets in dev reduces the number
+of requests, shrinking your page load time. And unlike minification, using
+combined assets in dev is usually not a problem, even when you're debugging
+them, because the concatenated files are still quite readable. The one
+exception is that combined files can make it difficult to find out which
+asset file includes the problem you're hunting down.
 
 <em>Note that one advantage of using DynamicAssets</em> instead of a
 deploy-time task is that you can get more exposure to your processed JavaScript.
@@ -205,18 +233,19 @@ more code, tacked on from another file.)
 
 Call me silly, but I prefer to find out about that kind of error before I
 deploy my app, and with DynamicAssets I can easily set my test environment to
-combine and minify, so any full-stack testing will expose the problem.
+combine and minify, so full-stack testing will expose the problem.
 
-=== Or, to eliminate the biggest bottleneck, turn off class caching in development
+=== To eliminate the biggest bottleneck, turn off class caching in development (but...)
 
-If you don't mind to restart your server every time you change a
-bit of Ruby code, you could edit your config/environments/development.rb
+If (big if) you don't mind restarting your server every time you change a
+bit of Ruby code, you <em>could</em> edit your config/environments/development.rb
 to do this
 
       config.cache_classes = true
 
 which would eliminate the biggest chunk of overhead in dev, class-reloading
-on every request.
+on every request. And if you're doing that, you might as well set your asset
+files to be cached, too, in your assets.yml.
 
 
 == Copyright

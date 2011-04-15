@@ -14,6 +14,7 @@ module DynamicAssets
 
     RELATIVE_URL_ROOT  = "/stylesheets"
 
+    delegate :minify, :to => CSSMin
 
     def formats
       %w(sass scss css)
@@ -21,16 +22,6 @@ module DynamicAssets
 
     def type
       :stylesheets
-    end
-
-    def minify(content_string)
-      # From asset_packager. PENDING: replace with github.com/rgrove/cssmin ?
-      content_string.gsub(/\s+/, " ").# collapse space
-        gsub(/\/\*(.*?)\*\//, "").    # remove comments
-        gsub(/\} /, "}\n").           # add line breaks
-        gsub(/\n$/, "").              # remove last break
-        gsub(/ \{ /, " {").           # trim inside brackets
-        gsub(/; \}/, "}")             # trim inside brackets
     end
 
 

@@ -80,5 +80,60 @@ module DynamicAssets
       end
     end
 
+    describe "#minify" do
+      subject         { reference.minify content }
+      let(:reference) { StylesheetReference.new :name => "thing" }
+
+      context "when given content that has whitespace and comments" do
+        let(:content) do %Q!
+          /*
+           * Some sample styles
+           */
+          div.foo   { color: #FFF; } /* foo style */
+          div.bar,   span.baz   {   font-size:  12px;   }
+          !
+        end
+
+        it "is the result of calling CSSMin.minify" do
+          CSSMin.should_receive(:minify).with(content).and_return "tiny content"
+          subject.should == "tiny content"
+        end
+
+        # We assume CSSMin is fully tested, but as a sanity check we
+        # observe the StylesheetReference's behavior with a few examples:
+
+        it "contains no double spaces" do
+          should_not =~ /  /
+        end
+
+        it "contains no newlines" do
+          should_not =~ /\n/
+        end
+
+        it "removes space between selectors" do
+          should contain_string "div.bar,span.baz"
+        end
+
+        it "removes space around opening brackets" do
+          should contain_string "span.baz{font-size"
+        end
+
+        it "removes space around closing brackets" do
+          should contain_string "}div.bar"
+        end
+
+        it "removes space around values" do
+          should contain_string "font-size:12px;}"
+        end
+
+        it "removes comments that are on their own lines" do
+          should_not contain_string "Some sample styles"
+        end
+
+        it "removes comments that are on the same line as a style" do
+          should_not contain_string "Some sample styles"
+        end
+      end
+    end
   end
 end

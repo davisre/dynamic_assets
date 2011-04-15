@@ -3,6 +3,7 @@ module DynamicAssets
   require 'dynamic_assets/engine' if defined? Rails
 end
 
+require 'dynamic_assets/cssmin'
 require 'dynamic_assets/core_extensions'
 require 'dynamic_assets/config'
 require 'dynamic_assets/controller'

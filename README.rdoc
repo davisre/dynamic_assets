@@ -21,7 +21,7 @@ Out of the box it can (optionally):
   (Example: You may want a set of stylesheets for your main interface, and another set for your admin
   interface, maybe with some overlap. With DynamicAssets, your normal users won't pay the
   penalty of downloading your admin styles.)
-* Allow CSS assets to refer to static images through relative URLs. That is, it doesn't break CSS urls.
+* Allow CSS assets to refer to static images through relative URLs. That is, it doesn't break CSS URLs.
 * Honor Rails' scheme for asset hosts.
 * Honor Rails' scheme for cache-busting.
 
@@ -29,7 +29,7 @@ It seems that Rails 3.1 will offer many of these features off-the-shelf, which i
 cool. DynamicAssets allows you to get some of those features today in 3.0, but it
 wasn't intended as a back port or a stopgap. It just happens that serving assets
 dynamically is useful enough that multiple people have thought of implementing it.
-(See also: {Shoebox}[https://github.com/ddollar/shoebox])
+(See also: {Shoebox}[https://github.com/ddollar/shoebox] and {Sprockets}[http://getsprockets.org/])
 
 == How To
 

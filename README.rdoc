@@ -41,14 +41,14 @@ dynamically is useful enough that multiple people have thought of implementing i
    <tt>app/assets/javascripts</tt>. Each filename's extension triggers an
    optional pre-processor:
 
-    .css          = raw
-    .js           = raw
+    .css          = raw CSS
+    .js           = raw JS
     .css.erb      = process with ERB
     .js.erb       = process with ERB
-    .css.sass     = process with Sass and assume sass syntax
-    .css.scss     = process with Sass and assume scss syntax
-    .css.sass.erb = process with ERB then Sass (sass)
-    .css.scss.erb = process with ERB then Sass (scss)
+    .sass         = process with Sass and assume sass syntax
+    .scss         = process with Sass and assume scss syntax
+    .sass.erb     = process with ERB then Sass (sass syntax)
+    .scss.erb     = process with ERB then Sass (scss syntax)
 
    (Note that each file can be processed differently. You could stick one toe
    into the Sass world by renaming one of your .css files to .scss.)

@@ -15,8 +15,8 @@ Jeweler::Tasks.new do |gem|
   gem.name = "dynamic_assets"
   gem.homepage = "http://github.com/davisre/dynamic_assets"
   gem.license = "MIT"
-  gem.summary = %Q{Make your Rails 3 app package and process CSS and JS assets on the fly}
-  gem.description = %Q{Make your Rails 3 app package and process CSS and JS assets on the fly}
+  gem.summary = %Q{Allow your Rails 3 app to package and process your CSS and JS assets on the fly.}
+  gem.description = %Q{Allow your Rails 3 app to package and process your CSS and JS assets on the fly.}
   gem.email = "davis@coaster.com"
   gem.authors = ["Robert Davis"]
 

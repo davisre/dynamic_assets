@@ -1,19 +1,225 @@
 = dynamic_assets
 
-Description goes here.
+DynamicAssets allows a Rails 3.0 app to serve its JavaScript and CSS assets
+dynamically instead of statically, which makes all kinds of things possible.
+Out of the box it can (optionally):
 
-== Contributing to dynamic_assets
- 
-* Check out the latest master to make sure the feature hasn't been implemented or the bug hasn't been fixed yet
-* Check out the issue tracker to make sure someone already hasn't requested it and/or contributed it
-* Fork the project
-* Start a feature/bugfix branch
-* Commit and push until you are happy with your contribution
-* Make sure to add tests for it. This is important so I don't break it in a future version unintentionally.
-* Please try not to mess with the Rakefile, version, or history. If you want to have your own version, or is otherwise necessary, that is fine, but please isolate to its own commit so I can cherry-pick around it.
+* Combine all CSS files into one for faster downloading.
+* Combine all JavaScript files into one.
+* Minify assets to make them smaller.
+* Run your CSS or JS assets through ERB, like views.
+* Run your CSS assets through a {Sass}[http://sass-lang.com/] pre-processor (sass or scss).
+* Run them through ERB then Sass, what the heck. (Actually, this can be useful, like to allow
+  your app to set some Sass variables.)
+* Eliminate the need for deploy-time rake tasks that combine and minify your assets.
+* Combine, minify, and pre-process in memory instead of on disk, to accommodate read-only
+  filesystems (e.g. Heroku).
+* Cache the result using Rails action caching, and set the headers for far-future expiration,
+  allowing browsers and front-end caches like Varnish to hold assets for a long time.
+* Allow assets to be grouped, much like
+  {Scott Becker's venerable asset_packager}[http://synthesis.sbecker.net/pages/asset_packager].
+  (Example: You may want a set of stylesheets for your main interface, and another set for your admin
+  interface, maybe with some overlap. With DynamicAssets, your normal users won't pay the
+  penalty of downloading your admin styles.)
+* Allow CSS assets to refer to static images through relative URLs. That is, it doesn't break CSS urls.
+* Honor Rails' scheme for asset hosts.
+* Honor Rails' scheme for cache-busting.
+
+It seems that Rails 3.1 will offer many of these features off-the-shelf, which is
+cool. DynamicAssets allows you to get some of those features today in 3.0, but it
+wasn't intended as a back port or a stopgap. It just happens that serving assets
+dynamically is useful enough that multiple people have thought of implementing it.
+(See also: {Shoebox}[https://github.com/ddollar/shoebox])
+
+== How To
+
+1. Add this to your Gemfile:
+
+    gem "dynamic_assets"
+
+2. Put your CSS files in <tt>app/views/stylesheets</tt> and your JS files in
+   <tt>app/views/javascripts</tt>. Each filename's extension triggers an
+   optional pre-processor:
+
+    .css          = raw
+    .js           = raw
+    .css.erb      = process with ERB
+    .js.erb       = process with ERB
+    .css.sass     = process with Sass and assume sass syntax
+    .css.scss     = process with Sass and assume scss syntax
+    .css.sass.erb = process with ERB then Sass (sass)
+    .css.scss.erb = process with ERB then Sass (scss)
+
+   (Note that each file can be processed differently. You could stick one toe
+   into the Sass world by renaming one of your .css files to .scss.)
+
+3. Create a config/assets.yml file that looks something like this:
+
+    ---
+
+    config:
+      production, staging, test:
+        combine_asset_groups: true
+        minify: true
+        cache: true
+      development:
+        combine_asset_groups: true
+        minify: false
+        cache: false
+
+    javascripts:
+    - base:
+      - foo
+      - bar
+      - baz
+      - third-party/widget
+    - admin
+      - foo
+      - qux
+      - quux
+
+    stylesheets:
+    - app:
+      - reset
+      - application
+    - admin
+      - reset
+      - application
+      - admin
+
+   The asset file sets some config values and then lists your assets. Don't be shy
+   about listing your assets; it's a good way to get noticed. This sample config
+   file says that in production, foo.js, bar.js, baz.js, and widget.js (which is
+   in app/views/javascripts/third-party) should be combined into one file,
+   minified, and served by your app as /assets/javascripts/base.js in such a way
+   that it'd be cached. In development, those files would be combined but not minified
+   or cached.
+
+4. In your layout, replace your usual CSS and JS references with
+
+    <%= stylesheet_asset_tag :app %>
+
+   wherever you want your stylesheet tags to appear and
+
+    <%= javascript_asset_tag :base %>
+
+   wherever you want your script tags to appear. The symbol argument to each
+   helper is the name of the group you defined in assets.yml. The helper will
+   produce one tag if the assets are combined, or multiple tags if they're not,
+   like the cowboy in <i>Mulholland Dr.</i>
+
+
+== Variables for ERB
+
+By default, assets are served by a small controller whose routes are added to
+your app automatically when the gem is loaded, but you can easily create your
+own controller if you prefer. One reason to do this would be to inject variables
+into an asset via ERB, like this:
+
+    class AssetsController < ApplicationController
+        include DynamicAssets::Controller
+
+        def show_stylesheet
+          @background_color = '#FFE'
+          render_asset :stylesheets, params[:name], "text/css"
+        end
+    end
+
+Now in app/views/stylesheets/application.css.erb you could do this:
+
+    body {
+        background-color: <%= @background_color %>;
+    }
+
+
+== Static Images Embedded in CSS
+
+Sometimes you'll install a JavaScript plugin that was created by someone
+else, and it will come with a stylesheet and images. The stylesheet may
+reference an image like this:
+
+    div.thing {
+        background: url(fancy_background.png);
+    }
+
+Browsers will find the image by looking in the same URL path as the
+stylesheet, so in a typical Rails environment, you might add these two
+files to your app as public/stylesheets/thing.css and
+public/stylesheets/fancy_background.png.
+
+With DynamicAssets, you'll put them here instead:
+
+    app/views/stylesheets/thing.css
+    public/stylesheets/thing/fancy_background.png
+
+and the processor will make sure the embedded URL is turned into a fully
+qualified one that will allow the browser to find
+/stylesheets/thing/fancy_background.png.
+
+== CSS Media Types
+
+If you have different CSS files for printing than for the screen, create
+separate groups in your assets.yml. Then include both groups in your layout:
+
+    <%= stylesheet_asset_tag :app %>
+    <%= stylesheet_asset_tag :app_printing, :media => "print" %>
+
+== Performance
+
+In production, assets can typically be cached aggressively. Like Rails,
+dynamic_assets adds a URL parameter to the asset path that will change
+if any of the underlying assets is modified, forcing clients to reload
+the asset. In production, I find dynamic assets to be quite speedy.
+
+But dynamic assets can sometimes be annoying during development. The
+sweet spot for my dev environment is to combine assets but not to
+minify or cache them (see assets.yml above). Here's why:
+
+=== Usually set assets not to be minified in development
+
+I usually leave minification off in development, because it does add some
+overhead to each asset request, and it makes them difficult to read if you
+need to debug them (like with Firebug). In production, caching minimizes
+the overhead, but you typically won't cache your assets in development,
+unless you're some sort of nut.
+
+=== Set assets to be combined, even in development
+
+By default Rails reloads all classes with each new request in development
+mode. If you're not combining all of your assets, a single page load
+will result in an additional request to your app for each asset, which
+may result in a dozen requests to your dev server for one page, and each
+one will reload all of your classes. Combining assets in dev reduces the
+number of requests, shrinking your page load time. And unlike minification,
+using combined assets in dev is usually not a problem because the concatenated
+files are still quite readable. The one exception is that it makes it more
+difficult to find out which asset file includes the problem you're hunting
+down.
+
+<em>Note that one advantage of using DynamicAssets</em> instead of a
+deploy-time task is that you can get more exposure to your processed JavaScript.
+Concatenation and minification can sometimes uncover bugs in your scripts.
+(Example: a forgotten semicolon may be forgiven by a browser if it's at the
+end of a script file but it may cause problems if it's immediately followed by
+more code, tacked on from another file.)
+
+Call me silly, but I prefer to find out about that kind of error before I
+deploy my app, and with DynamicAssets I can easily set my test environment to
+combine and minify, so any full-stack testing will expose the problem.
+
+=== Or, to eliminate the biggest bottleneck, turn off class caching in dev
+
+If you don't mind to restart your server every time you change a
+bit of Ruby code, you could edit your config/environments/development.rb
+to do this
+
+      config.cache_classes = true
+
+which would eliminate the biggest chunk of overhead in dev, class-reloading
+on every request.
+
 
 == Copyright
 
-Copyright (c) 2011 Robert Davis. See LICENSE.txt for
-further details.
+Copyright (c) 2011 Robert Davis. See LICENSE.txt for further details.
 

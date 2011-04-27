@@ -29,11 +29,13 @@ module DynamicAssetsHelpers
   protected
 
     def asset_path(asset_ref)
-      name = asset_ref.name
+      path_args = []
+      path_args << asset_ref.name
+      path_args << { :timestamp => asset_ref.mtime.to_i.to_s } if asset_ref.mtime.present?
 
       case asset_ref
-      when DynamicAssets::StylesheetReference then stylesheet_asset_path name
-      when DynamicAssets::JavascriptReference then javascript_asset_path name
+      when DynamicAssets::StylesheetReference then stylesheet_asset_path *path_args
+      when DynamicAssets::JavascriptReference then javascript_asset_path *path_args
       else raise "Unknown asset type: #{asset_ref}"
       end
     end
@@ -41,10 +43,8 @@ module DynamicAssetsHelpers
     def asset_url(asset_ref)
       path = asset_path asset_ref
       path = "/" + path unless path[0,1] == "/"
-      path << "?#{asset_ref.mtime.to_i.to_s}" if asset_ref.mtime.present?
 
       host = compute_asset_host path
-
       host ? "#{host}#{path}" : path
     end
 

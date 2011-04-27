@@ -57,9 +57,9 @@ describe DynamicAssetsHelpers do
           before { helper.config.asset_host.should be_nil }
 
           it "is three tags with hrefs derived from the asset name and mtime" do
-            should contain_string 'href="/assets/stylesheets/a.css?123"'
-            should contain_string 'href="/assets/stylesheets/b.css?456"'
-            should contain_string 'href="/assets/stylesheets/c.css?789"'
+            should contain_string 'href="/assets/stylesheets/123/a.css"'
+            should contain_string 'href="/assets/stylesheets/456/b.css"'
+            should contain_string 'href="/assets/stylesheets/789/c.css"'
           end
         end
 
@@ -67,9 +67,9 @@ describe DynamicAssetsHelpers do
           before { helper.config.stub(:asset_host).and_return "http://a.example.com" }
 
           it "is three tags with hrefs whose host is a.example.com" do
-            should contain_string 'href="http://a.example.com/assets/stylesheets/a.css?123"'
-            should contain_string 'href="http://a.example.com/assets/stylesheets/b.css?456"'
-            should contain_string 'href="http://a.example.com/assets/stylesheets/c.css?789"'
+            should contain_string 'href="http://a.example.com/assets/stylesheets/123/a.css"'
+            should contain_string 'href="http://a.example.com/assets/stylesheets/456/b.css"'
+            should contain_string 'href="http://a.example.com/assets/stylesheets/789/c.css"'
           end
         end
 
@@ -77,9 +77,9 @@ describe DynamicAssetsHelpers do
           before { helper.config.stub(:asset_host).and_return "http://a%d.example.com" }
 
           it "is three tags with hrefs whose host is a[0-3].example.com" do
-            should =~ /href="http:\/\/a[0-3].example.com\/assets\/stylesheets\/a.css\?123"/
-            should =~ /href="http:\/\/a[0-3].example.com\/assets\/stylesheets\/b.css\?456"/
-            should =~ /href="http:\/\/a[0-3].example.com\/assets\/stylesheets\/c.css\?789"/
+            should =~ /href="http:\/\/a[0-3].example.com\/assets\/stylesheets\/123\/a.css"/
+            should =~ /href="http:\/\/a[0-3].example.com\/assets\/stylesheets\/456\/b.css"/
+            should =~ /href="http:\/\/a[0-3].example.com\/assets\/stylesheets\/789\/c.css"/
           end
         end
       end
@@ -132,9 +132,9 @@ describe DynamicAssetsHelpers do
           before { helper.config.asset_host.should be_nil }
 
           it "is three tags with srcs derived from the asset name and mtime" do
-            should contain_string 'src="/assets/javascripts/a.js?123"'
-            should contain_string 'src="/assets/javascripts/b.js?456"'
-            should contain_string 'src="/assets/javascripts/c.js?789"'
+            should contain_string 'src="/assets/javascripts/123/a.js"'
+            should contain_string 'src="/assets/javascripts/456/b.js"'
+            should contain_string 'src="/assets/javascripts/789/c.js"'
           end
         end
 
@@ -142,9 +142,9 @@ describe DynamicAssetsHelpers do
           before { helper.config.stub(:asset_host).and_return "http://a.example.com" }
 
           it "is three tags with srcs whose host is a.example.com" do
-            should contain_string 'src="http://a.example.com/assets/javascripts/a.js?123"'
-            should contain_string 'src="http://a.example.com/assets/javascripts/b.js?456"'
-            should contain_string 'src="http://a.example.com/assets/javascripts/c.js?789"'
+            should contain_string 'src="http://a.example.com/assets/javascripts/123/a.js"'
+            should contain_string 'src="http://a.example.com/assets/javascripts/456/b.js"'
+            should contain_string 'src="http://a.example.com/assets/javascripts/789/c.js"'
           end
         end
 
@@ -152,9 +152,9 @@ describe DynamicAssetsHelpers do
           before { helper.config.stub(:asset_host).and_return "http://a%d.example.com" }
 
           it "is three tags with srcs whose host is a[0-3].example.com" do
-            should =~ /src="http:\/\/a[0-3].example.com\/assets\/javascripts\/a.js\?123"/
-            should =~ /src="http:\/\/a[0-3].example.com\/assets\/javascripts\/b.js\?456"/
-            should =~ /src="http:\/\/a[0-3].example.com\/assets\/javascripts\/c.js\?789"/
+            should =~ /src="http:\/\/a[0-3].example.com\/assets\/javascripts\/123\/a.js"/
+            should =~ /src="http:\/\/a[0-3].example.com\/assets\/javascripts\/456\/b.js"/
+            should =~ /src="http:\/\/a[0-3].example.com\/assets\/javascripts\/789\/c.js"/
           end
         end
       end

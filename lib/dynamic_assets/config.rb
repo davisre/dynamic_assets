@@ -11,9 +11,7 @@ module DynamicAssets
     end
 
 
-    #
-    #  Configuration
-    #
+    #  Configuration Queries
 
     def combine_asset_groups?
       @combine_asset_groups.nil? ? true : @combine_asset_groups
@@ -28,9 +26,7 @@ module DynamicAssets
     end
 
 
-    #
-    #  Methods
-    #
+    #  Asset Queries
 
     def asset_references_for_group_key(type, group_key)
       assets_hash[type].if_present { |gs| gs[:by_group][group_key] }

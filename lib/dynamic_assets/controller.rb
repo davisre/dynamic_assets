@@ -2,12 +2,6 @@
 module DynamicAssets
   module Controller
 
-    def self.included(base)
-      base.caches_action :show_stylesheet, :show_javascript, :expires_in => 60.minutes,
-        :if => Proc.new { Manager.cache? }
-    end
-
-
     #
     #  Actions
     #

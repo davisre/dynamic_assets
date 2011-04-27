@@ -13,7 +13,7 @@ Out of the box it can (optionally):
   your app to set some Sass variables.)
 * Combine, minify, and pre-process in memory instead of on disk, to accommodate read-only
   filesystems (e.g. Heroku).
-* Cache the result using Rails action caching, and set the headers for far-future expiration,
+* Set Cache-Control and Expires headers for far-future expiration,
   allowing browsers and front-end caches like Varnish to hold assets for a long time.
 * Allow assets to be grouped, much like
   {Scott Becker's venerable asset_packager}[http://synthesis.sbecker.net/pages/asset_packager].

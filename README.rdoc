@@ -11,7 +11,6 @@ Out of the box it can (optionally):
 * Run your CSS assets through a {Sass}[http://sass-lang.com/] pre-processor (sass or scss).
 * Run them through ERB then Sass, what the heck. (Actually, this can be useful, like to allow
   your app to set some Sass variables.)
-* Eliminate the need for deploy-time rake tasks that combine and minify your assets.
 * Combine, minify, and pre-process in memory instead of on disk, to accommodate read-only
   filesystems (e.g. Heroku).
 * Cache the result using Rails action caching, and set the headers for far-future expiration,
@@ -21,9 +20,12 @@ Out of the box it can (optionally):
   (Example: You may want a set of stylesheets for your main interface, and another set for your admin
   interface, maybe with some overlap. With DynamicAssets, your normal users won't pay the
   penalty of downloading your admin styles.)
-* Allow CSS assets to refer to static images through relative URLs. That is, it doesn't break CSS URLs.
+* Allow CSS assets to refer to static images through relative URLs. That is, it doesn't break URLs
+  embedded in CSS.
+* Invalidate caches and CDNs by inserting a timestamp into the asset URL path instead of using the
+  Rails scheme of appending a URL parameter. Some asset servers (notably Amazon CloudFront) will
+  drop parameters from the URL, so cache-busting requires path-changing.
 * Honor Rails' scheme for asset hosts.
-* Honor Rails' scheme for cache-busting.
 
 It seems that Rails 3.1 will offer many of these features off-the-shelf, which is
 cool. DynamicAssets allows you to get some of those features today in 3.0, but it
@@ -111,14 +113,14 @@ dynamically is useful enough that multiple people have thought of implementing i
    assets.yml says to combine asset groups, stylesheet_asset_tag(:base) will
    insert this one tag into your page:
 
-    <link href="/assets/stylesheets/base_v2.css?1302901941" media="screen" rel="stylesheet" type="text/css" />
+    <link href="/assets/stylesheets/1302901941/base_v2.css" media="screen" rel="stylesheet" type="text/css" />
 
    but if your assets.yml says not to combine them, stylesheet_asset_tag(:base)
    will insert one tag per CSS file:
 
-    <link href="/assets/stylesheets/reset.css?1302901941" media="screen" rel="stylesheet" type="text/css" />
-    <link href="/assets/stylesheets/application.css?1302901941" media="screen" rel="stylesheet" type="text/css" />
-    <link href="/assets/stylesheets/sidebar.css?1302901900" media="screen" rel="stylesheet" type="text/css" />
+    <link href="/assets/stylesheets/1302901941/reset.css" media="screen" rel="stylesheet" type="text/css" />
+    <link href="/assets/stylesheets/1302902000/application.css" media="screen" rel="stylesheet" type="text/css" />
+    <link href="/assets/stylesheets/1302901403/sidebar.css" media="screen" rel="stylesheet" type="text/css" />
 
 
 == Variables for ERB

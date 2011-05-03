@@ -42,10 +42,6 @@ module DynamicAssets
       else raise "unknown format #{format}"
       end
 
-      # PENDING: we could do something similar to insert the asset host,
-      # although we'd need to pass some context (namely the request) down
-      # from the controller to compute the asset host in the same way Rails
-      # does.
       transform_urls member_name, content_string
     end
 

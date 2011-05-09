@@ -192,11 +192,11 @@ If no :media attribute is supplied, stylesheet_asset_tag will use "screen".
 
 == Performance
 
-In production, assets can typically be cached aggressively. Like Rails,
-dynamic_assets adds a URL parameter to the asset path that will change
-if any of the underlying assets is modified, forcing clients to reload
-the asset. With action caching and/or an external cache like Varnish or
-a CDN, dynamic assets are quite speedy because you generate them rarely.
+In production, assets can typically be cached aggressively. dynamic_assets
+adds a timestamp to the asset path, and since it's based on the last-modified
+time of the underlying assets, clients will be forced to reload to reload
+assets when they change. With caching, dynamic assets are quite speedy
+because you generate them rarely.
 
 But during development they can be annoying <em>if</em> you set your
 environment to maximum slowness. The sweet spot for my dev configuration

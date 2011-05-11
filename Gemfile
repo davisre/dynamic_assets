@@ -8,7 +8,7 @@ group :development do
 end
 
 group :development, :test do
-	gem "capybara",	"~> 0.4.1.2"
-	gem "rspec-rails", "~> 2.5.0"
+	gem "capybara", "1.0.0.beta1"
+	gem "rspec-rails", "2.6.0.rc6"
 	gem 'sqlite3'
 end

@@ -31,7 +31,7 @@ protected
   def asset_path(asset_ref)
     path_args = []
     path_args << asset_ref.name
-    path_args << { :timestamp => asset_ref.mtime.to_i.to_s } if asset_ref.mtime.present?
+    path_args << { :signature => asset_ref.signature } if asset_ref.signature.present?
 
     case asset_ref
     when DynamicAssets::StylesheetReference then stylesheet_asset_path *path_args

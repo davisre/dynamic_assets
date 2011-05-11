@@ -22,9 +22,10 @@ Out of the box it can (optionally):
   penalty of downloading your admin styles.)
 * Allow CSS assets to refer to static images through relative URLs. That is, it doesn't break URLs
   embedded in CSS.
-* Invalidate caches and CDNs by inserting a timestamp into the asset URL path instead of using the
-  Rails scheme of appending a URL parameter. Some asset servers (notably Amazon CloudFront) will
-  drop parameters from the URL, so cache-busting requires path-changing.
+* Invalidate caches and CDNs by inserting a SHA1 signature into the asset URL path instead of using the
+  Rails scheme of appending a URL timestamp. Some asset servers (notably Amazon CloudFront) will
+  drop parameters from the URL, so cache-busting requires path-changing, and since assets are often
+  moved from machine to machine, modification times can be unreliable.
 * Honor Rails' scheme for asset hosts.
 
 It seems that Rails 3.1 will offer many of these features off-the-shelf, which is
@@ -193,7 +194,7 @@ If no :media attribute is supplied, stylesheet_asset_tag will use "screen".
 == Performance
 
 In production, assets can typically be cached aggressively. dynamic_assets
-adds a timestamp to the asset path, and since it's based on the last-modified
+adds a signature to the asset path, and since it's based on the last-modified
 time of the underlying assets, clients will be forced to reload to reload
 assets when they change. With caching, dynamic assets are quite speedy
 because you generate them rarely.

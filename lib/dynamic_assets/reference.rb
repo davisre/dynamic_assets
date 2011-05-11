@@ -57,8 +57,13 @@ module DynamicAssets
       s
     end
 
-    def mtime
-      paths.map { |p| File.mtime p }.max
+    def signature
+      # Note that the signature is based on the context-free
+      # content. The context must depend on external factors
+      # in the route, like the domain name, since the signature
+      # will not change when the context changes.
+
+      Digest::SHA1.hexdigest content
     end
 
     def minify(content_string)
@@ -105,7 +110,7 @@ module DynamicAssets
     def read_member(member_name)
       path = path_for_member_name member_name
       content_string = get_raw_content path
-      content_string = ERB.new(content_string).result(@context) if path_is_erb?(path)
+      content_string = ERB.new(content_string).result(@context) if @context && path_is_erb?(path)
       content_string
     end
 

@@ -1,3 +1,4 @@
+require 'digest/sha1'
 
 module DynamicAssets
   class Reference

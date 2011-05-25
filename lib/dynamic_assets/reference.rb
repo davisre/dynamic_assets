@@ -64,7 +64,7 @@ module DynamicAssets
       # in the route, like the domain name, since the signature
       # will not change when the context changes.
 
-      Digest::SHA1.hexdigest content
+      @signature ||= Digest::SHA1.hexdigest content
     end
 
     def minify(content_string)

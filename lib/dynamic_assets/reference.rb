@@ -62,9 +62,11 @@ module DynamicAssets
       # Note that the signature is based on the context-free
       # content. The context must depend on external factors
       # in the route, like the domain name, since the signature
-      # will not change when the context changes.
+      # will not change when the context changes. To force a
+      # change in signature, set or update the ASSET_VERSION
+      # config variable.
 
-      @signature ||= Digest::SHA1.hexdigest content
+      @signature ||= ((ENV['ASSET_VERSION'] || "") + Digest::SHA1.hexdigest(content))
     end
 
     def minify(content_string)

@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{dynamic_assets}
-  s.version = "0.5.1"
+  s.version = "0.5.2"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Robert Davis"]
-  s.date = %q{2011-05-11}
+  s.date = %q{2011-05-25}
   s.description = %q{Allow your Rails 3 app to package and process your CSS and JS assets on the fly.}
   s.email = %q{davis@coaster.com}
   s.extra_rdoc_files = [
@@ -33,7 +33,7 @@ Gem::Specification.new do |s|
   s.homepage = %q{http://github.com/davisre/dynamic_assets}
   s.licenses = ["MIT"]
   s.require_paths = ["lib"]
-  s.rubygems_version = %q{1.3.7}
+  s.rubygems_version = %q{1.6.2}
   s.summary = %q{Allow your Rails 3 app to package and process your CSS and JS assets on the fly.}
   s.test_files = [
     "spec/dummy_rails_app/app/controllers/application_controller.rb",
@@ -63,11 +63,11 @@ Gem::Specification.new do |s|
   ]
 
   if s.respond_to? :specification_version then
-    current_version = Gem::Specification::CURRENT_SPECIFICATION_VERSION
     s.specification_version = 3
 
     if Gem::Version.new(Gem::VERSION) >= Gem::Version.new('1.2.0') then
       s.add_runtime_dependency(%q<rails>, ["~> 3.0"])
+      s.add_runtime_dependency(%q<jsmin>, [">= 0"])
       s.add_development_dependency(%q<bundler>, ["~> 1.0.0"])
       s.add_development_dependency(%q<jeweler>, ["~> 1.5.2"])
       s.add_development_dependency(%q<capybara>, ["= 1.0.0.beta1"])
@@ -75,6 +75,7 @@ Gem::Specification.new do |s|
       s.add_development_dependency(%q<sqlite3>, [">= 0"])
     else
       s.add_dependency(%q<rails>, ["~> 3.0"])
+      s.add_dependency(%q<jsmin>, [">= 0"])
       s.add_dependency(%q<bundler>, ["~> 1.0.0"])
       s.add_dependency(%q<jeweler>, ["~> 1.5.2"])
       s.add_dependency(%q<capybara>, ["= 1.0.0.beta1"])
@@ -83,6 +84,7 @@ Gem::Specification.new do |s|
     end
   else
     s.add_dependency(%q<rails>, ["~> 3.0"])
+    s.add_dependency(%q<jsmin>, [">= 0"])
     s.add_dependency(%q<bundler>, ["~> 1.0.0"])
     s.add_dependency(%q<jeweler>, ["~> 1.5.2"])
     s.add_dependency(%q<capybara>, ["= 1.0.0.beta1"])

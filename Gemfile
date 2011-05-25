@@ -1,6 +1,7 @@
 source "http://rubygems.org"
 
 gem "rails", "~> 3.0"
+gem "jsmin"
 
 group :development do
   gem "bundler", "~> 1.0.0"

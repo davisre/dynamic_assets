@@ -1,3 +1,5 @@
+require 'jsmin'
+
 module DynamicAssets
 
   class JavascriptReference < Reference

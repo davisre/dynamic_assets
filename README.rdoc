@@ -14,7 +14,8 @@ Out of the box it can (optionally):
 * Combine, minify, and pre-process in memory instead of on disk, to accommodate read-only
   filesystems (e.g. Heroku).
 * Set Cache-Control and Expires headers for far-future expiration,
-  allowing browsers and front-end caches like Varnish to hold assets for a long time.
+  allowing browsers and front-end caches like Varnish or {Rack::Cache}[http://rtomayko.github.com/rack-cache/]
+  to hold assets for a long time.
 * Allow assets to be grouped, much like
   {Scott Becker's venerable asset_packager}[http://synthesis.sbecker.net/pages/asset_packager].
   (Example: You may want a set of stylesheets for your main interface, and another set for your admin
@@ -39,6 +40,11 @@ dynamically is useful enough that multiple people have thought of implementing i
 1. Add this to your Gemfile:
 
     gem "dynamic_assets"
+
+   And if you're planning to use Sass or SCSS, add this, too:
+
+    gem "haml", "~> 3.0"
+
 
 2. Put your CSS files in <tt>app/assets/stylesheets</tt> and your JS files in
    <tt>app/assets/javascripts</tt>. Each filename's extension triggers an

@@ -7,22 +7,19 @@ Out of the box it can (optionally):
 * Combine all CSS files into one for faster downloading.
 * Combine all JavaScript files into one.
 * Minify assets to make them smaller.
-* Run your CSS or JS assets through ERB, like views.
+* Run your CSS or JS assets through ERB so they can reference helpers, like views.
 * Run your CSS assets through a {Sass}[http://sass-lang.com/] pre-processor (sass or scss).
-* Run them through ERB then Sass, what the heck. (Actually, this can be useful, like to allow
-  your app to set some Sass variables.)
+* Run them through ERB then Sass, which can be useful to allow your app to set some Sass variables.
 * Combine, minify, and pre-process in memory instead of on disk, to accommodate read-only
   filesystems (e.g. Heroku).
 * Set Cache-Control and Expires headers for far-future expiration,
   allowing browsers and front-end caches like Varnish or {Rack::Cache}[http://rtomayko.github.com/rack-cache/]
   to hold assets for a long time.
-* Allow assets to be grouped, much like
+* Group assets, much like
   {Scott Becker's venerable asset_packager}[http://synthesis.sbecker.net/pages/asset_packager].
   (Example: You may want a set of stylesheets for your main interface, and another set for your admin
   interface, maybe with some overlap. With DynamicAssets, your normal users won't pay the
   penalty of downloading your admin styles.)
-* Allow CSS assets to refer to static images through relative URLs. That is, it doesn't break URLs
-  embedded in CSS.
 * Invalidate caches and CDNs by inserting a SHA1 signature into the asset URL path instead of using the
   Rails scheme of appending a URL timestamp. Some asset servers (notably Amazon CloudFront) will
   drop parameters from the URL, so cache-busting requires path-changing, and since assets are often
@@ -130,34 +127,11 @@ dynamically is useful enough that multiple people have thought of implementing i
     <link href="/assets/stylesheets/1302901403/sidebar.css" media="screen" rel="stylesheet" type="text/css" />
 
 
-== Variables for ERB
-
-By default, assets are served by a small controller whose routes are added to
-your app automatically when the gem is loaded, but you can easily create your
-own controller if you prefer. One reason to do this would be to inject variables
-into an asset via ERB, like this:
-
-    class AssetsController < ApplicationController
-        include DynamicAssets::Controller
-
-        def show_stylesheet
-          @background_color = '#FFE'
-          render_asset :stylesheets, params[:name], "text/css"
-        end
-    end
-
-Now in app/assets/stylesheets/application.css.erb you could do this:
-
-    body {
-        background-color: <%= @background_color %>;
-    }
-
-
 == Static Image URLs Embedded in CSS
 
 Suppose you install a JavaScript plugin that comes with a stylesheet and
 some images. The stylesheet, thing.css, may reference one of its images
-like this:
+with a relative URL, like this:
 
     div.thing {
         background: url(fancy_background.png);

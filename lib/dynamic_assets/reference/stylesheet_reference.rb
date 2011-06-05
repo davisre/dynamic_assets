@@ -28,8 +28,10 @@ module DynamicAssets
   protected
 
     # Overridden to transform URLs embedded in the CSS
-    def read_member(member_name)
+    def read_member(member_name, for_signature)
       content_string = super
+      return content_string if for_signature
+
       format = format_for_member_name member_name
 
       content_string = case format

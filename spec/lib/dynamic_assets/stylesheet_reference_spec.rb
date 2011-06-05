@@ -4,8 +4,9 @@ module DynamicAssets
   describe StylesheetReference do
 
     describe "#content" do
-      subject         { reference.content }
+      subject         { reference.content bindings }
       let(:reference) { StylesheetReference.new :name => "thing" }
+      let(:bindings)  { stub }
 
       context "when a css file with the given reference name exists" do
         before do

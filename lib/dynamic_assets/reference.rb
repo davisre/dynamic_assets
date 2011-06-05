@@ -50,23 +50,22 @@ module DynamicAssets
       @member_root = File.find_existing(possible_roots) || possible_roots.first
     end
 
-    # Optionally pass context from which ERB can pull instance variables.
-    def content(context = nil)
+    def content(context, for_signature = false)
       @context = context
-      s = combine_content
-      s = minify s if DynamicAssets::Manager.minify?
+      s = combine_content for_signature
+      s = minify s if DynamicAssets::Manager.minify? && !for_signature
       s
     end
 
-    def signature
-      # Note that the signature is based on the context-free
-      # content. The context must depend on external factors
-      # in the route, like the domain name, since the signature
-      # will not change when the context changes. To force a
-      # change in signature, set or update the ASSET_VERSION
+    def signature(context)
+      # Note that the signature is based on the context at the time the
+      # asset helper is called, which is different from the context at
+      # the time of asset rendering.
+      #
+      # To force a change in signature, set or update the ASSET_VERSION
       # config variable.
 
-      @signature ||= ((ENV['ASSET_VERSION'] || "") + Digest::SHA1.hexdigest(content))
+      (ENV['ASSET_VERSION'] || "") + Digest::SHA1.hexdigest(content(context, true))
     end
 
     def minify(content_string)
@@ -104,16 +103,26 @@ module DynamicAssets
       File.extname(path) == ".erb"
     end
 
-    def combine_content
+    def combine_content(for_signature)
       member_names.map do |member_name|
-        read_member member_name
+        read_member member_name, for_signature
       end.join "\n"
     end
 
-    def read_member(member_name)
+    def read_member(member_name, for_signature)
       path = path_for_member_name member_name
       content_string = get_raw_content path
-      content_string = ERB.new(content_string).result(@context) if @context && path_is_erb?(path)
+
+      if path_is_erb?(path)
+        raise "ERB requires a context" unless @context
+        begin
+          content_string = ERB.new(content_string).result @context
+        rescue StandardError => e
+          raise e.exception(parse_erb_error(e, path, content_string) ||
+            "Error in ERB #{path}, unknown line number: #{e}")
+        end
+      end
+
       content_string
     end
 
@@ -125,5 +134,26 @@ module DynamicAssets
       File.open(path, "r") { |f| f.read }
     end
 
+    def parse_erb_error(error, path, content_string)
+      # Exception parsing inspired by HelpfulERB
+
+      return nil unless error.backtrace.first =~ /^[^:]+:(\d+):in /
+
+      line_number = $1.to_i
+      lines = content_string.split /\n/
+
+      min = [line_number - 5, 0].max
+      max = [line_number + 1, lines.length].min
+
+      width = max.to_s.size
+
+      message = "Error in ERB '#{path}' at line #{line_number}:\n\n" +
+        (min..max).map do |i|
+          n = i + 1
+          marker = n == line_number ? "*" : ""
+          "%2s %#{width}i %s" % [marker, n, lines[i]]
+        end.join("\n") +
+        "\n\n#{error.class}: #{error.message}"
+    end
   end
 end

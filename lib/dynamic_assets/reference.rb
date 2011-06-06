@@ -1,4 +1,5 @@
 require 'digest/sha1'
+require 'erubis'
 
 module DynamicAssets
   class Reference
@@ -116,7 +117,7 @@ module DynamicAssets
       if path_is_erb?(path)
         raise "ERB requires a context" unless @context
         begin
-          content_string = ERB.new(content_string).result @context
+          content_string = Erubis::Eruby.new(content_string).result @context
         rescue StandardError => e
           raise e.exception(parse_erb_error(e, path, content_string) ||
             "Error in ERB #{path}, unknown line number: #{e}")
@@ -137,7 +138,8 @@ module DynamicAssets
     def parse_erb_error(error, path, content_string)
       # Exception parsing inspired by HelpfulERB
 
-      return nil unless error.backtrace.first =~ /^[^:]+:(\d+):in /
+      trace_index = error.backtrace.find_index { |trace_line| trace_line =~ /^.erubis:(\d+):in / }
+      return nil unless trace_index
 
       line_number = $1.to_i
       lines = content_string.split /\n/
@@ -153,7 +155,8 @@ module DynamicAssets
           marker = n == line_number ? "*" : ""
           "%2s %#{width}i %s" % [marker, n, lines[i]]
         end.join("\n") +
-        "\n\n#{error.class}: #{error.message}"
+        "\n\n#{error.class}: #{error.message}" +
+        (trace_index > 0 ? "\n\nEncountered here:\n#{error.backtrace[0..trace_index-1].join "\n"}" : "")
     end
   end
 end

@@ -32,7 +32,7 @@ protected
     path_args = []
     path_args << asset_ref.name
 
-    signature = asset_ref.signature binding
+    signature = asset_ref.signature DynamicAssets::ViewContext.get(controller)
     path_args << { :signature => signature } if signature.present?
 
     case asset_ref

@@ -27,7 +27,7 @@ module DynamicAssets
         headers["Expires"] = (Time.now + 365.days).utc.httpdate
       end
 
-      render :layout => false, :text => asset.content(binding), :content_type => mime_type
+      render :layout => false, :text => asset.content(ViewContext.get(self)), :content_type => mime_type
     end
   end
 

@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{dynamic_assets}
-  s.version = "0.7.0"
+  s.version = "0.7.1"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Robert Davis"]
-  s.date = %q{2011-06-06}
+  s.date = %q{2011-06-08}
   s.description = %q{Allow your Rails 3 app to package and process your CSS and JS assets on the fly.}
   s.email = %q{davis@coaster.com}
   s.extra_rdoc_files = [

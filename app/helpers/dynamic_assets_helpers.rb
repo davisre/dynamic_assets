@@ -1,26 +1,26 @@
 
 module DynamicAssetsHelpers
 
-  def stylesheet_asset_tag(group_key, http_attributes = {})
+  def stylesheet_asset_tag(group_key, options = {})
     DynamicAssets::Manager.asset_references_for_group_key(:stylesheets, group_key).map do |asset_ref|
 
       tag :link, {
         :type   => "text/css",
         :rel    => "stylesheet",
         :media  => "screen",
-        :href   => asset_url(asset_ref)
-      }.merge!(http_attributes)
+        :href   => asset_url(asset_ref, options.delete(:token))
+      }.merge!(options)
 
     end.join.html_safe
   end
 
-  def javascript_asset_tag(group_key, http_attributes = {})
+  def javascript_asset_tag(group_key, options = {})
     DynamicAssets::Manager.asset_references_for_group_key(:javascripts, group_key).map do |asset_ref|
 
       content_tag :script, "", {
         :type => "text/javascript",
-        :src  => asset_url(asset_ref)
-      }.merge!(http_attributes)
+        :src  => asset_url(asset_ref, options.delete(:token))
+      }.merge!(options)
 
     end.join.html_safe
   end
@@ -28,12 +28,12 @@ module DynamicAssetsHelpers
 
 protected
 
-  def asset_path(asset_ref)
+  def asset_path(asset_ref, token = nil)
     path_args = []
     path_args << asset_ref.name
 
     signature = asset_ref.signature DynamicAssets::ViewContext.get(controller)
-    path_args << { :signature => signature } if signature.present?
+    path_args << { :signature => signature, :token => token } if signature.present?
 
     case asset_ref
     when DynamicAssets::StylesheetReference then stylesheet_asset_path *path_args
@@ -42,8 +42,8 @@ protected
     end
   end
 
-  def asset_url(asset_ref)
-    path = asset_path asset_ref
+  def asset_url(asset_ref, token = nil)
+    path = asset_path asset_ref, token
     path = "/" + path unless path[0,1] == "/"
 
     host = compute_asset_host path

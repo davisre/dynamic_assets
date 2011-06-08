@@ -61,6 +61,13 @@ describe DynamicAssetsHelpers do
             should contain_string 'href="/assets/stylesheets/v/456/b.css"'
             should contain_string 'href="/assets/stylesheets/v/789/c.css"'
           end
+
+          context "when the arguments also include a :token" do
+            before { args << { :token => "something" } }
+            it "includes the token in the URL" do
+              should contain_string 'href="/assets-something/stylesheets/v/123/a.css"'
+            end
+          end
         end
 
         context "when config.asset_host is set to a.example.com" do
@@ -71,6 +78,13 @@ describe DynamicAssetsHelpers do
             should contain_string 'href="http://a.example.com/assets/stylesheets/v/456/b.css"'
             should contain_string 'href="http://a.example.com/assets/stylesheets/v/789/c.css"'
           end
+
+          context "when the arguments also include a :token" do
+            before { args << { :token => "something" } }
+            it "includes the token in the URL" do
+              should contain_string 'href="http://a.example.com/assets-something/stylesheets/v/123/a.css"'
+            end
+          end
         end
 
         context "when config.asset_host is set to a%d.example.com" do
@@ -80,6 +94,13 @@ describe DynamicAssetsHelpers do
             should =~ /href="http:\/\/a[0-3].example.com\/assets\/stylesheets\/v\/123\/a.css"/
             should =~ /href="http:\/\/a[0-3].example.com\/assets\/stylesheets\/v\/456\/b.css"/
             should =~ /href="http:\/\/a[0-3].example.com\/assets\/stylesheets\/v\/789\/c.css"/
+          end
+
+          context "when the arguments also include a :token" do
+            before { args << { :token => "something" } }
+            it "includes the token in the URL" do
+              should =~ /href="http:\/\/a[0-3].example.com\/assets-something\/stylesheets\/v\/123\/a.css"/
+            end
           end
         end
       end
@@ -136,6 +157,13 @@ describe DynamicAssetsHelpers do
             should contain_string 'src="/assets/javascripts/v/456/b.js"'
             should contain_string 'src="/assets/javascripts/v/789/c.js"'
           end
+
+          context "when the arguments also include a :token" do
+            before { args << { :token => "something" } }
+            it "includes the token in the URL" do
+              should contain_string 'src="/assets-something/javascripts/v/123/a.js"'
+            end
+          end
         end
 
         context "when config.asset_host is set to a.example.com" do
@@ -146,6 +174,13 @@ describe DynamicAssetsHelpers do
             should contain_string 'src="http://a.example.com/assets/javascripts/v/456/b.js"'
             should contain_string 'src="http://a.example.com/assets/javascripts/v/789/c.js"'
           end
+
+          context "when the arguments also include a :token" do
+            before { args << { :token => "something" } }
+            it "includes the token in the URL" do
+              should contain_string 'src="http://a.example.com/assets-something/javascripts/v/123/a.js"'
+            end
+          end
         end
 
         context "when config.asset_host is set to a%d.example.com" do
@@ -155,6 +190,13 @@ describe DynamicAssetsHelpers do
             should =~ /src="http:\/\/a[0-3].example.com\/assets\/javascripts\/v\/123\/a.js"/
             should =~ /src="http:\/\/a[0-3].example.com\/assets\/javascripts\/v\/456\/b.js"/
             should =~ /src="http:\/\/a[0-3].example.com\/assets\/javascripts\/v\/789\/c.js"/
+          end
+
+          context "when the arguments also include a :token" do
+            before { args << { :token => "something" } }
+            it "includes the token in the URL" do
+              should =~ /src="http:\/\/a[0-3].example.com\/assets-something\/javascripts\/v\/123\/a.js"/
+            end
           end
         end
       end

@@ -2,25 +2,27 @@
 module DynamicAssetsHelpers
 
   def stylesheet_asset_tag(group_key, options = {})
+    html_options, path_options = separate_options(options)
     DynamicAssets::Manager.asset_references_for_group_key(:stylesheets, group_key).map do |asset_ref|
 
       tag :link, {
         :type   => "text/css",
         :rel    => "stylesheet",
         :media  => "screen",
-        :href   => asset_url(asset_ref, options.delete(:token))
-      }.merge!(options)
+        :href   => asset_url(asset_ref, path_options)
+      }.merge!(html_options)
 
     end.join.html_safe
   end
 
   def javascript_asset_tag(group_key, options = {})
+    html_options, path_options = separate_options(options)
     DynamicAssets::Manager.asset_references_for_group_key(:javascripts, group_key).map do |asset_ref|
 
       content_tag :script, "", {
         :type => "text/javascript",
-        :src  => asset_url(asset_ref, options.delete(:token))
-      }.merge!(options)
+        :src  => asset_url(asset_ref, path_options)
+      }.merge!(html_options)
 
     end.join.html_safe
   end
@@ -28,26 +30,29 @@ module DynamicAssetsHelpers
 
 protected
 
-  def asset_path(asset_ref, token = nil)
-    path_args = []
-    path_args << asset_ref.name
-
+  def asset_path(asset_ref, options = {})
     signature = asset_ref.signature DynamicAssets::ViewContext.get(controller)
-    path_args << { :signature => signature, :token => token } if signature.present?
+    options = options.reverse_merge :name => asset_ref.name, :signature => signature
 
     case asset_ref
-    when DynamicAssets::StylesheetReference then stylesheet_asset_path *path_args
-    when DynamicAssets::JavascriptReference then javascript_asset_path *path_args
+    when DynamicAssets::StylesheetReference then stylesheet_asset_path options
+    when DynamicAssets::JavascriptReference then javascript_asset_path options
     else raise "Unknown asset type: #{asset_ref}"
     end
   end
 
-  def asset_url(asset_ref, token = nil)
-    path = asset_path asset_ref, token
+  def asset_url(asset_ref, options = {})
+    path = asset_path asset_ref, options
     path = "/" + path unless path[0,1] == "/"
 
-    host = compute_asset_host path
-    host ? "#{host}#{path}" : path
+    host = options[:host].presence || compute_asset_host(path)
+
+    # Like Rails, add the protocol if the host lacks it.
+    if controller.respond_to?(:request) && host.present? && !is_uri?(host)
+      host = "#{controller.request.protocol}#{host}"
+    end
+
+    host.present? ? "#{host}#{path}" : path
   end
 
   # Extracted from Rails' AssetTagHelper, where it's private
@@ -66,4 +71,17 @@ protected
       end
     end
   end
+
+  def is_uri?(path)
+    path =~ %r{^[-a-z]+://|^cid:}
+  end
+
+  def separate_options(options)
+    path_options = {}
+    [:token, :signature, :name, :host, :protocol, :port].each do |key|
+      path_options[key] = options.delete(key) if options.has_key?(key)
+    end
+    [options, path_options]
+  end
+
 end

@@ -68,9 +68,33 @@ describe DynamicAssetsHelpers do
               should contain_string 'href="/assets-something/stylesheets/v/123/a.css"'
             end
           end
+
+          context "when the arguments also include a :host" do
+            before { args << { :host => "topsy.foo" } }
+            it "adds the host to the URL" do
+              should contain_string 'href="http://topsy.foo/assets/stylesheets/v/123/a.css"'
+            end
+          end
         end
 
-        context "when config.asset_host is set to a.example.com" do
+        context "when config.asset_host is set to a.example.com (with no protocol)" do
+          before { helper.config.stub(:asset_host).and_return "a.example.com" }
+
+          it "is three tags with hrefs whose host is a.example.com" do
+            should contain_string 'href="http://a.example.com/assets/stylesheets/v/123/a.css"'
+            should contain_string 'href="http://a.example.com/assets/stylesheets/v/456/b.css"'
+            should contain_string 'href="http://a.example.com/assets/stylesheets/v/789/c.css"'
+          end
+
+          context "when the arguments also include a :host" do
+            before { args << { :host => "topsy.foo" } }
+            it "includes the host in the URL, instead of the asset host" do
+              should contain_string 'href="http://topsy.foo/assets/stylesheets/v/123/a.css"'
+            end
+          end
+        end
+
+        context "when config.asset_host is set to http://a.example.com" do
           before { helper.config.stub(:asset_host).and_return "http://a.example.com" }
 
           it "is three tags with hrefs whose host is a.example.com" do
@@ -83,6 +107,13 @@ describe DynamicAssetsHelpers do
             before { args << { :token => "something" } }
             it "includes the token in the URL" do
               should contain_string 'href="http://a.example.com/assets-something/stylesheets/v/123/a.css"'
+            end
+          end
+
+          context "when the arguments also include a :host" do
+            before { args << { :host => "topsy.foo" } }
+            it "includes the host in the URL, instead of the asset host" do
+              should contain_string 'href="http://topsy.foo/assets/stylesheets/v/123/a.css"'
             end
           end
         end
@@ -100,6 +131,13 @@ describe DynamicAssetsHelpers do
             before { args << { :token => "something" } }
             it "includes the token in the URL" do
               should =~ /href="http:\/\/a[0-3].example.com\/assets-something\/stylesheets\/v\/123\/a.css"/
+            end
+          end
+
+          context "when the arguments also include a :host" do
+            before { args << { :host => "topsy.foo" } }
+            it "includes the host in the URL, instead of the asset host" do
+              should contain_string 'href="http://topsy.foo/assets/stylesheets/v/123/a.css"'
             end
           end
         end

@@ -31,7 +31,9 @@ module DynamicAssetsHelpers
 protected
 
   def asset_path(asset_ref, options = {})
-    signature = asset_ref.signature DynamicAssets::ViewContext.get(controller)
+    # Omit signature if we see an explicit :signature => false option.
+    signature = (options[:signature] == false) ? nil :
+      asset_ref.signature(DynamicAssets::ViewContext.get(controller))
     options = options.reverse_merge :name => asset_ref.name, :signature => signature
 
     case asset_ref

@@ -62,6 +62,13 @@ describe DynamicAssetsHelpers do
             should contain_string 'href="/assets/stylesheets/v/789/c.css"'
           end
 
+          context "when the arguments also include :signature => false" do
+            before { args << { :signature => false } }
+            it "omits the signature from the URL" do
+              should contain_string 'href="/assets/stylesheets/a.css"'
+            end
+          end
+
           context "when the arguments also include a :token" do
             before { args << { :token => "something" } }
             it "includes the token in the URL" do
@@ -103,6 +110,13 @@ describe DynamicAssetsHelpers do
             should contain_string 'href="http://a.example.com/assets/stylesheets/v/789/c.css"'
           end
 
+          context "when the arguments also include :signature => false" do
+            before { args << { :signature => false } }
+            it "omits the signature from the URL" do
+              should contain_string 'href="http://a.example.com/assets/stylesheets/a.css"'
+            end
+          end
+
           context "when the arguments also include a :token" do
             before { args << { :token => "something" } }
             it "includes the token in the URL" do
@@ -125,6 +139,13 @@ describe DynamicAssetsHelpers do
             should =~ /href="http:\/\/a[0-3].example.com\/assets\/stylesheets\/v\/123\/a.css"/
             should =~ /href="http:\/\/a[0-3].example.com\/assets\/stylesheets\/v\/456\/b.css"/
             should =~ /href="http:\/\/a[0-3].example.com\/assets\/stylesheets\/v\/789\/c.css"/
+          end
+
+          context "when the arguments also include :signature => false" do
+            before { args << { :signature => false } }
+            it "omits the signature from the URL" do
+              should =~ /href="http:\/\/a[0-3].example.com\/assets\/stylesheets\/a.css"/
+            end
           end
 
           context "when the arguments also include a :token" do

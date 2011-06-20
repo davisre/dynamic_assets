@@ -29,7 +29,7 @@ module DynamicAssets
     #  Asset Queries
 
     def asset_references_for_group_key(type, group_key)
-      assets_hash[type].if_present { |gs| gs[:by_group][group_key] }
+      assets_hash[type].if_present { |gs| gs[:by_group][group_key.to_sym] }
     end
 
     def asset_reference_for_name(type, name)

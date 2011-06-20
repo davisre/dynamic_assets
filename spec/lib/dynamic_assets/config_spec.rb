@@ -42,6 +42,10 @@ describe DynamicAssets::Config do
           subject.asset_references_for_group_key(:stylesheets, :base).length.should == 1
         end
 
+        it "#asset_references_for_group_key returns one reference when the group is a string" do
+          subject.asset_references_for_group_key(:stylesheets, "base").length.should == 1
+        end
+
         it "#asset_reference_for_name returns one stylesheet reference for the grouped sheet" do
           subject.asset_reference_for_name(:stylesheets, "base").should_not be_nil
         end
@@ -60,6 +64,10 @@ describe DynamicAssets::Config do
 
           it "#asset_references_for_group_key returns one javascript reference for the group" do
             subject.asset_references_for_group_key(:javascripts, :base).length.should == 1
+          end
+
+          it "#asset_references_for_group_key returns one reference when the group is a string" do
+            subject.asset_references_for_group_key(:javascripts, "base").length.should == 1
           end
 
           it "#asset_reference_for_name returns one javascript reference for the grouped script" do

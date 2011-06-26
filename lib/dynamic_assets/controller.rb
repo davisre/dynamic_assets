@@ -15,20 +15,24 @@ module DynamicAssets
     end
 
 
-  protected
+  private
 
     def render_asset(type, name, mime_type)
       asset = Manager.asset_reference_for_name type, name
       raise ActionController::RoutingError.new "No route matches \"#{request.path}\"" unless asset
 
-      if Manager.cache?
-        response.cache_control[:public] = true
-        response.cache_control[:max_age] = 365.days
-        headers["Expires"] = (Time.now + 365.days).utc.httpdate
-      end
-
+      cache_asset asset
       render :layout => false, :text => asset.content(ViewContext.get(self)), :content_type => mime_type
     end
+
+    def cache_asset(asset)
+      return unless Manager.cache? && params[:signature]
+
+      response.cache_control[:public] = true
+      response.cache_control[:max_age] = 365.days
+      headers["Expires"] = (Time.now + 365.days).utc.httpdate
+    end
+
   end
 
 end

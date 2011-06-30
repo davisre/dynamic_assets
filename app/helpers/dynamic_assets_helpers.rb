@@ -69,7 +69,7 @@ protected
           host.call(source)
         end
       else
-        (host =~ /%d/) ? host % (source.hash % 4) : host
+        (host =~ /%d/) ? host % hash_url(source) : host
       end
     end
   end
@@ -84,6 +84,20 @@ protected
       path_options[key] = options.delete(key) if options.has_key?(key)
     end
     [options, path_options]
+  end
+
+  # Don't use String#hash because it differs across VM invocations,
+  # meaning different servers will map the same URL to different asset
+  # hosts.
+  def hash_url(url)
+    l = url.length
+    i = 0
+    h = l
+    while i < l
+      h = h ^ url[i].ord
+      i = i + 1
+    end
+    h % 4
   end
 
 end

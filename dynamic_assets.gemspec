@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{dynamic_assets}
-  s.version = "0.7.5"
+  s.version = "0.7.6"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
-  s.authors = ["Robert Davis"]
-  s.date = %q{2011-06-30}
+  s.authors = [%q{Robert Davis}]
+  s.date = %q{2011-11-10}
   s.description = %q{Allow your Rails 3 app to package and process your CSS and JS assets on the fly.}
   s.email = %q{davis@coaster.com}
   s.extra_rdoc_files = [
@@ -32,9 +32,9 @@ Gem::Specification.new do |s|
     "lib/dynamic_assets/view_context.rb"
   ]
   s.homepage = %q{http://github.com/davisre/dynamic_assets}
-  s.licenses = ["MIT"]
-  s.require_paths = ["lib"]
-  s.rubygems_version = %q{1.6.2}
+  s.licenses = [%q{MIT}]
+  s.require_paths = [%q{lib}]
+  s.rubygems_version = %q{1.8.5}
   s.summary = %q{Allow your Rails 3 app to package and process your CSS and JS assets on the fly.}
 
   if s.respond_to? :specification_version then

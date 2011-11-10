@@ -28,13 +28,17 @@ module DynamicAssetsHelpers
   end
 
 
-protected
+private
 
   def asset_path(asset_ref, options = {})
-    # Omit signature if we see an explicit :signature => false option.
-    signature = (options[:signature] == false) ? nil :
-      asset_ref.signature(DynamicAssets::ViewContext.get(controller))
-    options = options.reverse_merge :name => asset_ref.name, :signature => signature
+    options = options.reverse_merge :name => asset_ref.name
+
+    # Omit signature if we see an explicit :signature => false option
+    if options[:signature] == false
+      options.delete :signature
+    else
+      options[:signature] = asset_ref.signature(DynamicAssets::ViewContext.get(controller))
+    end
 
     case asset_ref
     when DynamicAssets::StylesheetReference then stylesheet_asset_path options
